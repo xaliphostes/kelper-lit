@@ -1,5 +1,5 @@
 import { BufferGeometry, Color, DoubleSide, Float32BufferAttribute, Mesh, MeshPhongMaterial } from "three"
-import { IsoContoursFill } from "./isoContoursFilled"
+import { IsoContoursFilled } from "./isoContoursFilled"
 import { createBufferGeometry } from "./utils"
 
 /**
@@ -34,7 +34,7 @@ export function createIsoContourFilled(mesh: Mesh, attribute: number[], isoList:
         throw new Error('attribute is undefined')
     }
 
-    const iso = new IsoContoursFill('Insar', 128, isoList)
+    const iso = new IsoContoursFilled('Insar', 128, isoList)
     const result = iso.run(attribute, mesh.geometry)
     if (result.position.length === 0) return undefined
 

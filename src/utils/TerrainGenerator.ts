@@ -9,7 +9,8 @@ export type TerrainGeometryParameters = {
     height: number,
     resolution: number,
     heightScale: number,
-    smoothing: number
+    smoothing: number,
+    withNormals: boolean
 }
 
 export function generateTerrain(params: TerrainGeometryParameters): TerrainGeometry {
@@ -18,7 +19,8 @@ export function generateTerrain(params: TerrainGeometryParameters): TerrainGeome
         params.height,
         params.resolution,
         params.heightScale,
-        params.smoothing
+        params.smoothing,
+        params.withNormals
     );
     return terrainGen.generate();
 }
@@ -31,13 +33,15 @@ class TerrainGenerator {
         height: number = 1,        // Height of the terrain
         resolution: number = 50,    // Number of segments
         heightScale: number = 1.0,  // Maximum height of the terrain
-        smoothing: number = 1.0     // Smoothing factor for the noise
+        smoothing: number = 1.0,     // Smoothing factor for the noise
+        withNormals: boolean = false
     ) {
         this.width = width;
         this.height = height;
         this.resolution = resolution;
         this.heightScale = heightScale;
         this.smoothing = smoothing;
+        this.withNormals = withNormals
     }
 
     public generate(): TerrainGeometry {
@@ -68,8 +72,10 @@ class TerrainGenerator {
 
                 vertices.push(xPos, yPos, zPos);
 
-                const normal = this.calculateNormal(x, y, heightmap);
-                normals.push(...normal);
+                if (this.withNormals) {
+                    const normal = this.calculateNormal(x, y, heightmap);
+                    normals.push(...normal);
+                }
             }
         }
 
@@ -104,6 +110,7 @@ class TerrainGenerator {
     private resolution: number;
     private heightScale: number;
     private smoothing: number;
+    private withNormals: boolean;
 
     private generateNoise(x: number, y: number): number {
         // Simple multiple frequency noise function

@@ -3,7 +3,7 @@ import { ColorMap } from "./colorMap"
 import { createLut, fromValueToColor } from "./lut-utils"
 import { minMax } from "./utils"
 
-export class IsoContoursFill {
+export class IsoContoursFilled {
     attr: Array<number> = undefined
     nodes_: BufferAttribute = undefined
     segment_list_: Array<IsoSegment> = []

@@ -39,7 +39,14 @@ export default class View {
 
 		this.controls = new TrackballControls(this.camera, this.renderer.domElement)
 
-		const terrain = generateTerrain({ width: 1, height: 1, resolution: 100, heightScale: .02, smoothing: 0.7 })
+		const terrain = generateTerrain({
+			width: 1, 
+			height: 1, 
+			resolution: 100, 
+			heightScale: .02, 
+			smoothing: 0.5, 
+			withNormals: false
+		})
 
 		// -------------------------------------------------------
 		// The important part
@@ -51,7 +58,7 @@ export default class View {
 			attribute.push(terrain.vertices[i + 2])
 		}
 		const mm = minMax(attribute)
-		this.surface.generateIsos(attribute, generateIsoValues(mm[0], mm[1], 30), 'Insar', true, true)
+		this.surface.generateIsos(attribute, generateIsoValues(mm[0], mm[1], 20), 'Insar', true, true)
 		// -------------------------------------------------------
 
 		// Set initial sizes
