@@ -51,7 +51,7 @@ export default class View {
 			attribute.push(terrain.vertices[i + 2])
 		}
 		const mm = minMax(attribute)
-		this.surface.generateIsos(attribute, generateIsoValues(mm[0], mm[1], 20), 'PuRd_r', true)
+		this.surface.generateIsos(attribute, generateIsoValues(mm[0], mm[1], 30), 'Insar', true, true)
 		// -------------------------------------------------------
 
 		// Set initial sizes

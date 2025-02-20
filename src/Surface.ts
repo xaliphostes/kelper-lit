@@ -17,7 +17,7 @@ export class Surface {
         // Iso-filled will replace it.
     }
 
-    generateIsos(attribute: number[], isoList: number[], lut: string = 'Insar', viewLines = true) {
+    generateIsos(attribute: number[], isoList: number[], lut: string = 'Insar', viewFilled = true, viewLines = true) {
         if (this.isofill_) {
             this.scene.remove(this.isofill_)
         }
@@ -25,8 +25,10 @@ export class Surface {
             this.scene.remove(this.isolines_)
         }
 
-        this.isofill_ = createIsoContourFilled(this.mesh_, attribute, isoList)
-        this.scene.add(this.isofill_)
+        if (viewFilled) {
+            this.isofill_ = createIsoContourFilled(this.mesh_, attribute, isoList)
+            this.scene.add(this.isofill_)
+        }
 
         if (viewLines) {
             this.isolines_ = createIsoContourLines(this.mesh_, attribute, isoList)
