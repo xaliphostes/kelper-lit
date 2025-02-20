@@ -1,7 +1,7 @@
-import { LineSegments, Mesh, Scene } from "three";
-import { createSurface } from "./utils/createSurface";
-import { createIsoContourFilled } from "./utils/createIsoContoursFilled";
-import { createIsoContourLines } from "./utils/createIsoContoursLines";
+import { LineSegments, Mesh, Scene } from "three"
+import { createSurface } from "./utils/createSurface"
+import { createIsoContourFilled } from "./utils/createIsoContoursFilled"
+import { createIsoContourLines } from "./utils/createIsoContoursLines"
 
 export class Surface {
     private mesh_: Mesh = undefined

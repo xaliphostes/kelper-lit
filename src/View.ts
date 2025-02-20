@@ -5,7 +5,7 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 import { Surface } from "./Surface";
 import { generateIsoValues } from "./utils/generateIsoValues";
 import { minMax } from "./utils/utils";
-import { generateTerrain } from "./TerrainGenerator";
+import { generateTerrain } from "./utils/TerrainGenerator";
 
 export default class View {
 	private renderer: THREE.WebGLRenderer
@@ -39,10 +39,11 @@ export default class View {
 
 		this.controls = new TrackballControls(this.camera, this.renderer.domElement)
 
+		const terrain = generateTerrain({ width: 1, height: 1, resolution: 100, heightScale: .02, smoothing: 0.7 })
+
 		// -------------------------------------------------------
 		// The important part
 		// -------------------------------------------------------
-		const terrain = generateTerrain({ width: 1, height: 1, resolution: 50, heightScale: .05, smoothing: 1 })
 		this.surface = new Surface(terrain.vertices, terrain.indices, this.scene)
 
 		const attribute: number[] = []
@@ -61,11 +62,11 @@ export default class View {
 		this.renderer.setSize(vpW, vpH)
 		this.camera.aspect = vpW / vpH
 		this.camera.updateProjectionMatrix()
-		this.controls.handleResize();
+		this.controls.handleResize()
 	}
 
-	public update(secs: number): void {
+	public update(): void {
 		this.renderer.render(this.scene, this.camera)
-		this.controls.update();
+		this.controls.update()
 	}
 }

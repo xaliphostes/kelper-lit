@@ -1,24 +1,24 @@
-import View from "./View";
+import View from "./View"
 
 class App {
-	private view: View;
+	private view: View
 
 	constructor() {
-		const canvasBox = <HTMLCanvasElement>document.getElementById("webgl-canvas");
-		this.view = new View(canvasBox);
+		const canvasBox = <HTMLCanvasElement>document.getElementById("webgl-canvas")
+		this.view = new View(canvasBox)
 
-		window.addEventListener("resize", this.resize);
-		this.update(0);
+		window.addEventListener("resize", this.resize)
+		this.update()
 	}
 
 	private resize = (): void => {
-		this.view.onWindowResize(window.innerWidth, window.innerHeight);
+		this.view.onWindowResize(window.innerWidth, window.innerHeight)
 	}
 
-	private update = (t: number): void => {
-		this.view.update(t / 1000);
-		requestAnimationFrame(this.update);
+	private update = (): void => {
+		this.view.update()
+		requestAnimationFrame(this.update)
 	}
 }
 
-const app = new App();
+const app = new App()
