@@ -9,7 +9,7 @@ import { createBufferGeometry } from "./utils"
  * @param isoList The list of iso contours to generate (see {@link generateIsoValues}, {@link generateIsoValuesByNumber} and {@link generateIsoValuesBySpacing})
  * @returns 
  */
-export function createIsoContourFilled(mesh: Mesh, attribute: number[], isoList: number[]): Mesh {
+export function createIsoContourFilled(mesh: Mesh, attribute: number[], isoList: number[], lut: string = 'Igeoss'): Mesh {
     if (mesh === undefined) {
         throw new Error('mesh is undefined')
     }
@@ -34,7 +34,7 @@ export function createIsoContourFilled(mesh: Mesh, attribute: number[], isoList:
         throw new Error('attribute is undefined')
     }
 
-    const iso = new IsoContoursFilled('Insar', 128, isoList)
+    const iso = new IsoContoursFilled(lut, 128, isoList)
     const result = iso.run(attribute, mesh.geometry)
     if (result.position.length === 0) return undefined
 
@@ -51,7 +51,7 @@ export function createIsoContourFilled(mesh: Mesh, attribute: number[], isoList:
         flatShading: false,
         transparent: false,
         polygonOffset: true,
-        polygonOffsetFactor: 1
+        polygonOffsetFactor: .5
     })
 
     return nmesh

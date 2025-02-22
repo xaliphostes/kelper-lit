@@ -4,6 +4,26 @@
     <img src="media/screen.jpg" alt="drawing" width="500"/>
 </p>
 
+# Usage
+```ts
+import { Surface, generateIsoValues } from "kelper-lit"
+
+const vertices: number[] = ... ;
+const indices : number[] = ... ;
+
+const zCoord  = vertices.filter((_, index) => index % 3 === 2);
+
+const surface = new Surface(vertices, indices, scene)
+
+surface.generateIsos({
+    attribute  : zCoord,
+    isoList    : generateIsoValues(zCoord, 20), // 20 iso-contours
+    lut        : 'Blackbody',
+    viewFilled : true,
+    viewLines  : true
+})
+```
+
 ## Install
 ```bash
 git clone https://github.com/xaliphostes/kelper-lit.git

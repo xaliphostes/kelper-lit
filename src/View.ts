@@ -6,6 +6,7 @@ import { Surface } from "./Surface";
 import { generateIsoValues } from "./utils/generateIsoValues";
 import { minMax } from "./utils/utils";
 import { generateTerrain } from "./utils/TerrainGenerator";
+import { colorScale } from "./utils/colorScale"
 
 export default class View {
 	private renderer: THREE.WebGLRenderer
@@ -13,7 +14,6 @@ export default class View {
 	private camera: THREE.PerspectiveCamera
 	private controls: TrackballControls
 	private surface: Surface
-
 
 	constructor(canvasElem: HTMLCanvasElement) {
 		this.renderer = new WebGLRenderer({
@@ -39,26 +39,34 @@ export default class View {
 
 		this.controls = new TrackballControls(this.camera, this.renderer.domElement)
 
-		const terrain = generateTerrain({
-			width: 1, 
-			height: 1, 
-			resolution: 100, 
-			heightScale: .02, 
-			smoothing: 0.5, 
+		const {vertices, indices} = generateTerrain({
+			width: 1,
+			height: 1,
+			resolution: 100,
+			heightScale: .02,
+			smoothing: 0.5,
 			withNormals: false
 		})
 
 		// -------------------------------------------------------
 		// The important part
 		// -------------------------------------------------------
-		this.surface = new Surface(terrain.vertices, terrain.indices, this.scene)
+		this.surface = new Surface(vertices, indices, this.scene)
 
-		const attribute: number[] = []
-		for (let i = 0; i < terrain.vertices.length; i += 3) {
-			attribute.push(terrain.vertices[i + 2])
-		}
-		const mm = minMax(attribute)
-		this.surface.generateIsos(attribute, generateIsoValues(mm[0], mm[1], 20), 'Insar', true, true)
+		const attribute = vertices.filter((_, index) => index % 3 === 2);
+
+		/*  Possible color tables
+			"Cooltowarm", "Blackbody", "Grayscale", "Insar", "InsarBanded",
+			"Rainbow", "Igeoss", "Stress", "Blue_White_Red", "Blue_Green_Red",
+			"Spectrum", "Default", "Banded"
+		*/
+		this.surface.generateIsos({
+			attribute,
+			isoList: generateIsoValues(attribute, 20), // 20 iso-contours
+			lut: 'Cooltowarm',
+			viewFilled: true,
+			viewLines: true
+		})
 		// -------------------------------------------------------
 
 		// Set initial sizes
