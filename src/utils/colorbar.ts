@@ -16,7 +16,8 @@ export class Colorbar {
         this.sprite = new Sprite( new SpriteMaterial( {
             map: new CanvasTexture( this.lut.createCanvas() )
         } ) )
-        this.sprite.scale.x = 0.125
+        this.sprite.scale.x = 0.525
+        this.sprite.scale.y = 2
 
         this.scene = new Scene()
         this.scene.add( this.sprite )
