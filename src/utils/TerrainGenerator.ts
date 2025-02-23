@@ -13,6 +13,17 @@ export type TerrainGeometryParameters = {
     withNormals: boolean
 }
 
+/**
+ * @example
+ * const { vertices, indices } = generateTerrain({
+ *     width: 1,
+ *     height: 1,
+ *     resolution: 100,
+ *     heightScale: .03,
+ *     smoothing: 0.5,
+ *     withNormals: false
+ * })
+ */
 export function generateTerrain(params: TerrainGeometryParameters): TerrainGeometry {
     const terrainGen = new TerrainGenerator(
         params.width,

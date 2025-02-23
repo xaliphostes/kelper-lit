@@ -1,20 +1,45 @@
 //Controls scene, cam, renderer, and objects in scene.
 
-import { AmbientLight, Color, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer } from "three";
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import { Surface } from "./Surface";
-import { generateIsoValues } from "./utils/generateIsoValues";
-import { generateTerrain } from "./utils/TerrainGenerator";
-import { Colorbar } from "./utils/colorbar";
+import { Color, PerspectiveCamera, Scene, WebGLRenderer } from "three"
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+
+import { Surface } from "./Surface"
+import { generateIsoValues } from "./utils/generateIsoValues"
+import { generateMathSurface } from "./utils/MathSurfaceGenerator"
+
+import { Colorbar } from "./utils/colorbar"
+import { ViewportGizmo } from "three-viewport-gizmo"
+
+import { createGizmo } from "./utils/createGizmo"
+import { createLights } from "./utils/createLights"
+
 
 export default class View {
 	private renderer: WebGLRenderer
 	private scene: Scene
 	private camera: PerspectiveCamera
-	private controls: TrackballControls
+	private controls: OrbitControls
 	private surface: Surface
 	private colorbar: Colorbar
-	private colorbarContainer: HTMLDivElement
+	private gizmo: ViewportGizmo
+
+	/*
+	Possible lut:
+	-------------
+	"Cooltowarm", 
+	"Blackbody", 
+	"Grayscale", 
+	"Insar", 
+	"InsarBanded", 
+	"Rainbow", 
+	"Igeoss", 
+	"Stress", 
+	"Blue_White_Red", 
+	"Blue_Green_Red", 
+	"Spectrum", 
+	"Default", 
+	"Banded"
+	*/
 
 	constructor(canvasElem: HTMLCanvasElement) {
 		this.renderer = new WebGLRenderer({
@@ -28,26 +53,17 @@ export default class View {
 		this.scene = new Scene()
 		this.scene.background = new Color("gray")
 
-		const dirLight1 = new DirectionalLight(0xffffff, 3);
-		dirLight1.position.set(100, 100, 100);
-		this.scene.add(dirLight1);
+		createLights(this.scene)
 
-		const dirLight2 = new DirectionalLight(0xffffff, 3);
-		dirLight2.position.set(-100, -100, -100);
-		this.scene.add(dirLight2);
+		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
 
-		const ambientLight = new AmbientLight(0xcccccc);
-		this.scene.add(ambientLight);
+		this.gizmo = createGizmo(this.camera, this.renderer, this.controls)
 
-		this.controls = new TrackballControls(this.camera, this.renderer.domElement)
-
-		const { vertices, indices } = generateTerrain({
+		const { vertices, indices } = generateMathSurface({
 			width: 1,
 			height: 1,
 			resolution: 100,
-			heightScale: .02,
-			smoothing: 0.5,
-			withNormals: false
+			scaleZ: 0.5
 		})
 
 		// -------------------------------------------------------
@@ -55,7 +71,7 @@ export default class View {
 		// -------------------------------------------------------
 		this.surface = new Surface(vertices, indices, this.scene)
 		const attribute = vertices.filter((_, index) => index % 3 === 2);
-		const lut = 'Igeoss' // "Cooltowarm", "Blackbody", "Grayscale", "Insar", "InsarBanded", "Rainbow", "Igeoss", "Stress", "Blue_White_Red", "Blue_Green_Red", "Spectrum", "Default", "Banded"
+		const lut = 'Igeoss'
 		const nbIsos = 30
 
 		this.surface.generateIsos({
@@ -68,7 +84,12 @@ export default class View {
 		// -------------------------------------------------------
 
 		// Create colorbar
-		this.setupColorbar(lut, nbIsos, Math.min(...attribute), Math.max(...attribute));
+		this.colorbar = new Colorbar({
+			lutName: lut,
+			nbr: nbIsos,
+			min: Math.min(...attribute),
+			max: Math.max(...attribute)
+		})
 
 		// Set initial sizes
 		this.onWindowResize(window.innerWidth, window.innerHeight)
@@ -78,66 +99,17 @@ export default class View {
 		this.renderer.setSize(vpW, vpH)
 		this.camera.aspect = vpW / vpH
 		this.camera.updateProjectionMatrix()
-		this.controls.handleResize()
 
 		this.colorbar.renderer.setSize(60, 200);
+		this.gizmo.update();
 	}
 
+	// Call from App.ts
 	public update(): void {
 		this.renderer.render(this.scene, this.camera)
 		this.controls.update()
 		this.colorbar.render(this.renderer)
+		this.gizmo.render();
 	}
 
-	private setupColorbar(lutName: string, nbr: number, min: number, max: number) {
-		// Create wrapper container for colorbar and labels
-		const wrapper = document.createElement('div');
-
-		wrapper.style.position = 'absolute';
-		wrapper.style.top = '20px';
-		wrapper.style.right = '20px';
-		wrapper.style.display = 'flex';
-		wrapper.style.flexDirection = 'column';
-		wrapper.style.alignItems = 'center';
-		wrapper.style.padding = '10px';
-		wrapper.style.background = 'rgba(0, 0, 0, 0.3)';
-		wrapper.style.borderRadius = '5px';
-		document.body.appendChild(wrapper);
-
-		// Add max value label
-		const maxLabel = document.createElement('div');
-		maxLabel.textContent = max.toFixed(3);
-		maxLabel.style.color = 'white';
-		maxLabel.style.marginBottom = '5px';
-		maxLabel.style.fontFamily = 'Arial, sans-serif';
-		wrapper.appendChild(maxLabel);
-
-		// Create container for colorbar
-		this.colorbarContainer = document.createElement('div');
-		this.colorbarContainer.style.width = '50px';  // Increased width
-		this.colorbarContainer.style.height = '200px'; // Increased height
-		wrapper.appendChild(this.colorbarContainer);
-
-		// Add min value label
-		const minLabel = document.createElement('div');
-		minLabel.textContent = min.toFixed(3);
-		minLabel.style.color = 'white';
-		minLabel.style.marginTop = '5px';
-		minLabel.style.fontFamily = 'Arial, sans-serif';
-		wrapper.appendChild(minLabel);
-
-		// Create colorbar
-		this.colorbar = new Colorbar({
-			lutName,
-			min,
-			max,
-			nbr,
-			x: 0,    // Center position
-			y: 0,    // Center position
-			z: 1     // In front
-		});
-
-		// Add colorbar renderer to container
-		this.colorbarContainer.appendChild(this.colorbar.renderer.domElement);
-	}
 }

@@ -7,10 +7,11 @@ export class Colorbar {
     camera: OrthographicCamera
     renderer: WebGLRenderer
     sprite: Sprite
+    container: HTMLElement
 
     constructor(
-        {lutName, x = 0.5, y = 0, z = 1, min = 0, max = 1, nbr=32}:
-        {lutName: string, x?: number, y?: number, z?: number, min?: number, max?: number, nbr?: number})
+        {container, lutName, x = 0.5, y = 0, z = 1, min = 0, max = 1, nbr=32}:
+        {container?: HTMLElement, lutName: string, x?: number, y?: number, z?: number, min?: number, max?: number, nbr?: number})
     {
         this.lut = new ColorMap(lutName, nbr)
         this.sprite = new Sprite( new SpriteMaterial( {
@@ -32,6 +33,63 @@ export class Colorbar {
         this.renderer.setPixelRatio(window.devicePixelRatio)
 
         this.update(lutName, min, max)
+
+        // ----------------------------------
+
+        // Create wrapper container for colorbar and labels
+		const wrapper = document.createElement('div');
+
+		wrapper.style.position = 'absolute';
+		wrapper.style.top = '20px';
+		wrapper.style.right = '20px';
+		wrapper.style.display = 'flex';
+		wrapper.style.flexDirection = 'column';
+		wrapper.style.alignItems = 'center';
+		wrapper.style.padding = '10px';
+		wrapper.style.background = 'rgba(0, 0, 0, 0.3)';
+		wrapper.style.borderRadius = '5px';
+		document.body.appendChild(wrapper);
+
+		// Add max value label
+		const maxLabel = document.createElement('div');
+		maxLabel.textContent = max.toFixed(3);
+		maxLabel.style.color = 'white';
+		maxLabel.style.marginBottom = '5px';
+		maxLabel.style.fontFamily = 'Arial, sans-serif';
+		wrapper.appendChild(maxLabel);
+
+		// Create container for colorbar
+        if (container) {
+            this.container = container
+        } else {
+		    this.container = document.createElement('div');
+        }
+
+		this.container.style.width = '50px';  // Increased width
+		this.container.style.height = '200px'; // Increased height
+		wrapper.appendChild(this.container);
+
+		// Add min value label
+		const minLabel = document.createElement('div');
+		minLabel.textContent = min.toFixed(3);
+		minLabel.style.color = 'white';
+		minLabel.style.marginTop = '5px';
+		minLabel.style.fontFamily = 'Arial, sans-serif';
+		wrapper.appendChild(minLabel);
+
+		// Create colorbar
+		// this.colorbar = new Colorbar({
+		// 	lutName,
+		// 	min,
+		// 	max,
+		// 	nbr,
+		// 	x: 0,    // Center position
+		// 	y: 0,    // Center position
+		// 	z: 1     // In front
+		// });
+
+		// Add colorbar renderer to container
+		this.container.appendChild(this.renderer.domElement);
     }
 
     render = (renderer: WebGLRenderer) => {

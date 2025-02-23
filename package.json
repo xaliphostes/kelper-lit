@@ -11,11 +11,13 @@
     },
     "dependencies": {
         "@types/chroma-js": "^3.1.1",
+        "camera-controls": "^2.10.0",
         "chroma-js": "^3.1.2",
         "chroma.ts": "^1.0.10",
         "d3": "^7.9.0",
         "d3fc": "^15.2.13",
         "three": "0.173.0",
+        "three-viewport-gizmo": "^2.0.2",
         "webpack": "5.72.1"
     },
     "devDependencies": {

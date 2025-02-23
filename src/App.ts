@@ -21,4 +21,6 @@ class App {
 	}
 }
 
+// One instance of the app
+//
 const app = new App()

@@ -37,3 +37,9 @@ npm run serve
 
 ## Visualize
 Then open [this link](http://localhost:8000/web)
+
+## See
+- https://github.com/Fennec-hub/three-viewport-gizmo
+- https://fennec-hub.github.io/three-viewport-gizmo/examples/yomotsu-camera-controls.html?type=sphere
+- 
+- https://github.com/yomotsu/camera-controls
